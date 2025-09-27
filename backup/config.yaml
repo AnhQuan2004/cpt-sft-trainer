@@ -43,4 +43,4 @@ training_args:
   report_to: ["comet_ml"]
 
 artifacts:
-  model_hub_id: "ntkhoi/Qwen3-4B-Medical-LoRA-SFT-0710"
+  model_hub_id: "jasong03/Qwen3-4B-Medical-LoRA-SFT-0710"
