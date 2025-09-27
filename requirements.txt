@@ -8,7 +8,4 @@ PyYAML
 torch
 transformers
 trl
-
-# Install Unsloth and Unsloth Zoo with pip options
-# You can run the following command after installing other requirements:
-# pip install --upgrade --force-reinstall --no-cache-dir --no-deps unsloth unsloth_zoo
+unsloth

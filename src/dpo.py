@@ -42,7 +42,7 @@ def dpo_pipeline(config_path: str):
     os.environ["COMET_LOG_ASSETS"] = "True"
     experiment = Experiment(
         api_key=os.getenv("COMET_API_KEY"),
-        project_name="qwen3-4b-medical-cpt",
+        project_name="qwen3-4b-medical-dpo",
     )
 
     HF_TOKEN = os.getenv("HF_TOKEN")
