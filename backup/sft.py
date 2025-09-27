@@ -59,7 +59,7 @@ def sft_pipeline(config_path: str):
     os.environ["COMET_LOG_ASSETS"] = "True"
     experiment = Experiment(  # keep a handle if you want to log params/metrics
         api_key=os.getenv("COMET_API_KEY"),
-        project_name="qwen3-4b-medical-cpt",
+        project_name="qwen3-4b-medical-sft",
     )
 
     HF_TOKEN = os.getenv("HF_TOKEN")
