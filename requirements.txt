@@ -1,0 +1,11 @@
+auto_mix_prep
+comet_ml
+datasets
+huggingface_hub
+loguru
+python-dotenv
+PyYAML
+torch
+transformers
+trl
+unsloth
