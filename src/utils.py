@@ -33,9 +33,8 @@ def apply_chat_template(example, tokenizer):
 
     messages = [
         {
-            "role": "system", 
-            "content": """Bạn là trợ lý AI chuyên về giải đáp các câu hỏi y tế bằng tiếng Việt. Mục tiêu của bạn là giúp người dùng hiểu các chủ đề y tế một cách chính xác và an toàn.
-            Dưới đây là một hướng dẫn mô tả nhiệm vụ, kèm theo phần thông tin đầu vào để làm rõ ngữ cảnh. Viết một phản hồi phù hợp nhằm hoàn thành yêu cầu."""
+            "role": "system",
+            "content": "You are a helpful AI assistant. Your goal is to provide accurate and safe information to the user."
         },
         {
             "role": "user",
@@ -73,3 +72,37 @@ def format_dpo_dataset(example, tokenizer):
         'rejected': tokenizer.apply_chat_template(rejected_messages, tokenize=False),
         'chosen': tokenizer.apply_chat_template(chosen_messages, tokenize=False)
     }
+
+def format_goemotions_for_chat(example, tokenizer):
+    # Find the emotion label(s)
+    emotions = []
+    emotion_columns = [
+        'admiration', 'amusement', 'anger', 'annoyance', 'approval', 'caring',
+        'confusion', 'curiosity', 'desire', 'disappointment', 'disapproval',
+        'disgust', 'embarrassment', 'excitement', 'fear', 'gratitude', 'grief',
+        'joy', 'love', 'nervousness', 'optimism', 'pride', 'realization',
+        'relief', 'remorse', 'sadness', 'surprise', 'neutral'
+    ]
+    for col in emotion_columns:
+        if col in example and example[col] == 1:
+            emotions.append(col)
+
+    output_text = ", ".join(emotions) if emotions else "neutral"
+
+    messages = [
+        {
+            "role": "system",
+            "content": "You are an AI assistant specializing in emotion classification. Your task is to identify the emotions present in the user's text."
+        },
+        {
+            "role": "user",
+            "content": f"Please classify the emotion of the following text: {example['text']}"
+        },
+        {
+            "role": "assistant",
+            "content": output_text
+        }
+    ]
+
+    chat_format = tokenizer.apply_chat_template(messages, tokenize=False)
+    return {'text': chat_format}
