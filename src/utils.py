@@ -73,8 +73,9 @@ def format_dpo_dataset(example, tokenizer):
         'chosen': tokenizer.apply_chat_template(chosen_messages, tokenize=False)
     }
 
-def format_goemotions_for_chat(example, tokenizer):
-    # Find the emotion label(s)
+def format_goemotions_plain(example, tokenizer):
+    """Format GoEmotions data for plain text fine-tuning (no chat template)."""
+    text = example["text"]
     emotions = []
     emotion_columns = [
         'admiration', 'amusement', 'anger', 'annoyance', 'approval', 'caring',
@@ -87,22 +88,7 @@ def format_goemotions_for_chat(example, tokenizer):
         if col in example and example[col] == 1:
             emotions.append(col)
 
-    output_text = ", ".join(emotions) if emotions else "neutral"
-
-    messages = [
-        {
-            "role": "system",
-            "content": "You are an AI assistant specializing in emotion classification. Your task is to identify the emotions present in the user's text."
-        },
-        {
-            "role": "user",
-            "content": f"Please classify the emotion of the following text: {example['text']}"
-        },
-        {
-            "role": "assistant",
-            "content": output_text
-        }
-    ]
-
-    chat_format = tokenizer.apply_chat_template(messages, tokenize=False)
-    return {'text': chat_format}
+    joined_labels = ", ".join(emotions) if emotions else "neutral"
+    
+    prompt = f"Input: {text}\nOutput: {joined_labels}"
+    return {"text": prompt}
