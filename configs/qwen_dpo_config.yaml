@@ -1,5 +1,5 @@
 model_args:
-  name: "jasong03/Qwen3-4B-Medical-LoRA-SFT-0710"
+  name: "jasong03/Qwen3-4B-CPT-0802"
   max_seq_length: 4096
   dtype: null  
   load_in_4bit: False
@@ -7,7 +7,7 @@ model_args:
 
 datasets:
   names:
-    - "codin-research/sft-qa-synthetic-dpo"
+    - "mrm8488/goemotions"
   preprocessing:
     num_proc: 16
 
