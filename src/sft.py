@@ -23,7 +23,7 @@ from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
 from transformers import TrainingArguments, DataCollatorForLanguageModeling
 
-from utils import load_yaml_config, load_and_merge_datasets, apply_chat_template, format_goemotions_plain
+from utils import load_yaml_config, load_and_process_dataset
 
 def sft_pipeline(config_path: str):
     """Finetune the model."""
@@ -64,20 +64,7 @@ def sft_pipeline(config_path: str):
         full_finetuning = full_finetuning,
     )
 
-    dataset = load_and_merge_datasets(config)
-
-    # Determine which formatting function to use based on the dataset
-    dataset_name = config["datasets"]["names"][0]
-    if "goemotions" in dataset_name:
-        formatting_function = format_goemotions_plain
-    else:
-        formatting_function = apply_chat_template
-
-    dataset = dataset.map(
-        formatting_function,
-        fn_kwargs={"tokenizer": tokenizer},
-        remove_columns=dataset.column_names
-    )
+    dataset = load_and_process_dataset(config, tokenizer)
 
     dataset = dataset.train_test_split(
         test_size=0.1,

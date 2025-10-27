@@ -20,40 +20,27 @@ def formatting_prompts_func(examples, tokenizer):
     return {"text" : [example + tokenizer.eos_token for example in examples["text"]]}
 
 
-def load_and_merge_datasets(config: dict) -> datasets.Dataset:
-    """Load and merge datasets."""
+def load_and_process_dataset(config: dict, tokenizer) -> datasets.Dataset:
+    """Load, merge, and process the go_emotions dataset."""
 
-    datasets_to_concatenate = []
-    for dataset_name in config["datasets"]["names"]:
-        # The user wants to use train, validation, and test splits for training.
-        if "go_emotions" in dataset_name or "goemotions" in dataset_name:
-            dataset_dict = load_dataset(dataset_name)
-            all_splits = [ds for ds in dataset_dict.values()]
-            datasets_to_concatenate.append(concatenate_datasets(all_splits))
-        else:
-            datasets_to_concatenate.append(load_dataset(dataset_name, split="train"))
+    dataset_name = config["datasets"]["names"][0]
+    
+    # Forcing the use of the go_emotions plain text formatter
+    formatting_function = format_goemotions_plain
+    
+    # Load all splits (train, validation, test) for the dataset
+    dataset_dict = load_dataset(dataset_name)
+    all_splits = [ds for ds in dataset_dict.values()]
+    raw_dataset = concatenate_datasets(all_splits).shuffle(seed=3047)
 
-    return concatenate_datasets(datasets_to_concatenate).shuffle(seed=3047)
-
-def apply_chat_template(example, tokenizer):
-
-    messages = [
-        {
-            "role": "system",
-            "content": "You are a helpful AI assistant. Your goal is to provide accurate and safe information to the user."
-        },
-        {
-            "role": "user",
-            "content": str(example['instruction']) + ('\n' + example["input"] if "input" in example and example["input"] else "")},
-        {
-            "role": "assistant",
-            "content": example.get("output", "")}
-    ]
-
-    chat_format = tokenizer.apply_chat_template(messages, tokenize=False)
-    return {
-        'text': chat_format
-    }
+    # Apply the go_emotions formatting function
+    processed_dataset = raw_dataset.map(
+        formatting_function,
+        fn_kwargs={"tokenizer": tokenizer},
+        remove_columns=raw_dataset.column_names
+    )
+    
+    return processed_dataset
 
 def format_dpo_dataset(example, tokenizer):
     rejected_messages = [
