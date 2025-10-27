@@ -23,11 +23,17 @@ def formatting_prompts_func(examples, tokenizer):
 def load_and_merge_datasets(config: dict) -> datasets.Dataset:
     """Load and merge datasets."""
 
-    datasets = []
+    datasets_to_concatenate = []
     for dataset_name in config["datasets"]["names"]:
-        datasets.append(load_dataset(dataset_name, split="train"))
+        # The user wants to use train, validation, and test splits for training.
+        if "go_emotions" in dataset_name or "goemotions" in dataset_name:
+            dataset_dict = load_dataset(dataset_name)
+            all_splits = [ds for ds in dataset_dict.values()]
+            datasets_to_concatenate.append(concatenate_datasets(all_splits))
+        else:
+            datasets_to_concatenate.append(load_dataset(dataset_name, split="train"))
 
-    return concatenate_datasets(datasets).shuffle(seed=3047)
+    return concatenate_datasets(datasets_to_concatenate).shuffle(seed=3047)
 
 def apply_chat_template(example, tokenizer):
 

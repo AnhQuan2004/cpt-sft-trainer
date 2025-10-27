@@ -127,10 +127,15 @@ def sft_pipeline(config_path: str):
         )
     )
 
-    trainer = trainer.train()
+    trainer.train()
 
-    model.push_to_hub(config["artifacts"]["model_hub_id"])
-    tokenizer.push_to_hub(config["artifacts"]["model_hub_id"])
+    if config.get("artifacts", {}).get("push_to_hub", False):
+        print("Pushing model to Hugging Face Hub...")
+        model.push_to_hub(config["artifacts"]["model_hub_id"])
+        tokenizer.push_to_hub(config["artifacts"]["model_hub_id"])
+        print("Model pushed successfully.")
+    else:
+        print("Skipping push to Hugging Face Hub.")
 
 
 if __name__ == "__main__":

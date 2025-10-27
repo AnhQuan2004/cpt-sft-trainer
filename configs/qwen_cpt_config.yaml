@@ -7,9 +7,7 @@ model_args:
 
 datasets:
   names:
-    - "codin-research/vie-medical-pretrain-data"
-    - "codin-research/vie-general-pretrain-data"
-    - "codin-research/en-general-pretrain-data"
+    - "mrm8488/goemotions"  
   preprocessing:
     num_proc: 16
 
@@ -36,4 +34,4 @@ training_args:
   metric_for_best_model: "eval_loss"
   
 artifacts:
-  model_hub_id: "ntkhoi/Qwen3-4B-Medical-CPT-0707"
+  model_hub_id: "jasong03/Qwen3-4B-CPT-0802"
